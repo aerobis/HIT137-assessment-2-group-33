@@ -33,7 +33,55 @@ to 4 decimal places.
 
 def tokenizer(expr: str):
     tokens = []
-    i = 0
+    i = 0 # Cursor position in the expression / Index
     n = len(expr)
     
-           
+    while i < n:
+        char = expr[i] # Iterate through each character in the expression
+        
+        
+        # Skip if whitespace
+        if char.isspace():
+            i += 1 
+            continue
+        
+        # For digits
+        if char.isdigit():
+            start = i # Remember where the number began
+            while i < n and expr[i].isdigit():
+                i += 1 
+            # Handle decimals
+            if i < n and expr[i] == ".":
+                i += 1
+                if i >= n or not expr[i].isdigit(): # If after the "." there ISN'T a digit,
+                    return None # It's not a decimal.
+                while i < n and expr[i].isdigit(): #If after the "." there IS a digit
+                    i += 1 # Treat as a decimal
+            # Since 'start' marks the posiition where the number started
+            # and i marks the position of the cursor of the latest number
+            # Simply pass them as starting and ending values
+            tokens.append(("NUM", expr[start: i]))
+            continue
+
+        # For Operands
+        if char in "+-*/%":
+            tokens.append(("OP", ch))
+            i += 1
+            continue
+
+        # For Parantheses
+        if char == "(":
+            tokens.append(("LPAREN", "(")) 
+            i += 1
+            continue
+        
+        if char == ")":
+            tokens.append(("RPAREN", ")")) 
+            i += 1
+            continuez
+            
+        # Assume anything else is invalid
+        return None # Parser should treat this as a tokenizing error
+    
+    tokens.append(("END", None))
+    return tokens 
