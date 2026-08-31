@@ -29,6 +29,11 @@ Basic formatting:
 Results are formatted such that whole numbers are displayed
 without any decimal points, whereas non-integers are defaulted
 to 4 decimal places.
-
-
 """
+
+def tokenizer(expr: str):
+    tokens = []
+    i = 0
+    n = len(expr)
+    
+           
