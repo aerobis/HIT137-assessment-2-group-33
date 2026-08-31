@@ -65,7 +65,7 @@ def tokenizer(expr: str):
 
         # For Operands
         if char in "+-*/%":
-            tokens.append(("OP", ch))
+            tokens.append(("OP", char))
             i += 1
             continue
 
@@ -85,3 +85,7 @@ def tokenizer(expr: str):
     
     tokens.append(("END", None))
     return tokens 
+    console.log(tokens)
+    
+tokenizer("3 + 5 = (8)")
+
