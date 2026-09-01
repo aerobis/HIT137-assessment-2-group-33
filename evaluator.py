@@ -78,14 +78,27 @@ def tokenizer(expr: str):
         if char == ")":
             tokens.append(("RPAREN", ")")) 
             i += 1
-            continuez
+            continue
             
         # Assume anything else is invalid
         return None # Parser should treat this as a tokenizing error
     
     tokens.append(("END", None))
     return tokens 
-    console.log(tokens)
-    
-tokenizer("3 + 5 = (8)")
+
+# We'll be going forward by keeping a state handy instead of anything Global
+
+# Checks the current token
+def current(state):
+    return state["tokens"][state["pos"]]
+
+# Consumes the current token, moves cursor (pos) to the next token in line
+def eat(state, expected_type = None):
+    token = state["tokens"][state["pos"]] # Track token
+    if expected_type and token[0] != expected_type: 
+        raise ValueError(f"Expected {expected_type}, received {token}")
+    state["pos"] += 1 # Move cursor to the next token
+    return token
+
+
 
