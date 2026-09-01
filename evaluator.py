@@ -161,4 +161,16 @@ def parse_term(state):
             break
     return node
 
+# Handle + and - last
+def parse_expr(state):
+    node = parse_term(state) # Obtain left-hand operand
+    while current(state)[0] == "OP" and current(state)[1] in ("+", "-"):
+        op = current(state)[1] # Store the operand
+        eat(state)
+        right = parse_term(state) # Obtain right-hand operand
+        node = ("bin", op, node, right)
+        # To employ left-to-right chaining
+    return node # Return the complete Abstract Syntax Tree for the entire expression
 
+
+        
