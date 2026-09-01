@@ -134,5 +134,14 @@ def parse_power(state):
         # "bin" for binary, "^" for the operand, and link the 'left' and 'right' branches of exponentiation
     return left    
 
+# Handle prefixes, with chaining allowed
+def parse_unary(state):
+    # As the check happens BEFORE reading a number, a unary operation (negation) is considered
+    if current(state)[0] == "OP" and current(state)[1] == "-":
+        eat(state)
+        return ("neg", parse_unary(state)) # Recursively call on whatever follows to wrap the rest in the unary negation
+    if current(state)[0] == "OP" and current(state)[1] == "+":
+        raise ValueError ("Unary + disallowed.")
+    return parse_power(state)
 
 
