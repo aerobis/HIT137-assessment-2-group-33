@@ -100,5 +100,26 @@ def eat(state, expected_type = None):
     state["pos"] += 1 # Move cursor to the next token
     return token
 
+# Primary parser
+def parse_primary(state):
+    token_type, token_val = current(state) # Get the current token.
+                                           # Separate it into type of token, i.e. NUM, followed by the actual value that triggered it, i.e. "3.14"
 
+    # Handling Numbers
+    if token_type == "NUM": 
+        eat(state)
+        return ("num", float(token_val)) # Convert the raw string literal to a float value. Return a parse tree node tuple
+                                         # formatted as, e.g. ("num", 3.14)
+
+    # Handling parantheses
+    elif token_type == "LPAREN":
+        eat(state)
+        # Apply recursion. 
+        # Call the main expression parser, evaluate the whole math, then store into 'node' variable
+        node = parse_expr(state)
+        # Eat the token explicitly with a closing paranthesis. If the paranthesis isn't closed, an error is raised.
+        eat(state, "RPAREN")
+        return node
+    else:
+        raise ValueError("Invalid Syntax")
 
