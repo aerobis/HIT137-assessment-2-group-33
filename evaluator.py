@@ -144,4 +144,21 @@ def parse_unary(state):
         raise ValueError ("Unary + disallowed.")
     return parse_power(state)
 
+def parse_term(state):
+    node = parse_unary(state) # After unary operation and exponentiation is considered, get left-hand operand
+    while True: # Run an infinite loop
+        token_type, token_val = current(state) # Get current token
+        if token_type == "OP" and token_val in ("*", "/", "%"):
+            eat(state)
+            right = parse_unary(state) # Recursively call to wrap unary negation and get right-hand operand
+            node = ("bin", token_val, node, right)
+        elif token_type == "LPAREN":
+            right = parse_unary(state)
+            # For cases like 2(3), make sure the result is 6 emplopying Implicit Multiplication
+            node = ("bin", "*", node, right)
+            # Chain left-to-right by calling node
+        else:
+            break
+    return node
+
 
