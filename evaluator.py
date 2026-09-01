@@ -123,3 +123,16 @@ def parse_primary(state):
     else:
         raise ValueError("Invalid Syntax")
 
+# Since exponentiation gets precedence above other operators,
+def parse_power(state):
+    left = parse_primary(state) # Get the immediately relevant left-hand node
+    if current(state)[0] == "OP" and current(state)[1] == "^": 
+        eat(state)
+        right = parse_power(state) # Recursive call for a right associative
+                                   # Simply, keep chaining to the right before completing the current node
+        return ("bin", "^", left, right) # Format a suitable tuple to return
+        # "bin" for binary, "^" for the operand, and link the 'left' and 'right' branches of exponentiation
+    return left    
+
+
+
