@@ -1,3 +1,4 @@
+import os
 """
 evaluator.py — HIT137 Assignment 2, Question 2
 
@@ -203,3 +204,122 @@ def evaluate_tree(node):
 
     raise ValueError("Invalid expression tree")
         
+def format_number(value):
+    if value == int(value):
+        return str(int(value))
+
+    return str(round(value, 4))
+
+def tree_to_string(node):
+    kind = node[0]
+
+    if kind == "num":
+        return format_number(node[1])
+
+    if kind == "neg":
+        return "(neg " + tree_to_string(node[1]) + ")"
+
+    if kind == "bin":
+        op = node[1]
+        left = tree_to_string(node[2])
+        right = tree_to_string(node[3])
+
+        return "(" + op + " " + left + " " + right + ")"
+
+    raise ValueError("Invalid expression tree")
+
+def tokens_to_string(tokens):
+    parts = []
+
+    for token_type, token_value in tokens:
+        if token_type == "END":
+            parts.append("[END]")
+        else:
+            parts.append("[" + token_type + ":" + token_value + "]")
+
+    return " ".join(parts)
+
+def process_expression(expr):
+    tokens = tokenizer(expr)
+
+    if tokens is None:
+        return {
+            "input": expr,
+            "tree": "ERROR",
+            "tokens": "ERROR",
+            "result": "ERROR"
+        }
+
+    token_text = tokens_to_string(tokens)
+
+    try:
+        state = {
+            "tokens": tokens,
+            "pos": 0
+        }
+
+        tree = parse_expr(state)
+
+        if current(state)[0] != "END":
+            raise ValueError("Unexpected token")
+
+        tree_text = tree_to_string(tree)
+
+    except (ValueError, IndexError):
+        return {
+            "input": expr,
+            "tree": "ERROR",
+            "tokens": token_text,
+            "result": "ERROR"
+        }
+
+    try:
+        result = float(evaluate_tree(tree))
+
+    except (ZeroDivisionError, ValueError, OverflowError):
+        result = "ERROR"
+
+    return {
+        "input": expr,
+        "tree": tree_text,
+        "tokens": token_text,
+        "result": result
+    }
+
+def evaluate_file(input_path: str) -> list[dict]:
+    results = []
+
+    with open(input_path, "r") as input_file:
+        expressions = input_file.read().splitlines()
+
+    for expression in expressions:
+        result = process_expression(expression)
+        results.append(result)
+
+    output_dir = os.path.dirname(input_path)
+    output_path = os.path.join(output_dir, "output.txt")
+
+    blocks = []
+
+    for item in results:
+        if item["result"] == "ERROR":
+            result_text = "ERROR"
+        else:
+            result_text = format_number(item["result"])
+
+        block = (
+            "Input: " + item["input"] + "\n"
+            "Tree: " + item["tree"] + "\n"
+            "Tokens: " + item["tokens"] + "\n"
+            "Result: " + result_text
+        )
+
+        blocks.append(block)
+
+    with open(output_path, "w") as output_file:
+        output_file.write("\n\n".join(blocks))
+
+    return results
+
+if __name__ == "__main__":
+    evaluate_file("input.txt")
