@@ -64,7 +64,7 @@ def tokenizer(expr: str):
             continue
 
         # For Operands
-        if char in "+-*/%":
+        if char in "+-*/%^":
             tokens.append(("OP", char))
             i += 1
             continue
