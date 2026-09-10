@@ -1,3 +1,6 @@
+# ============================================================
+# SHREYASH PART - TOKENIZER PARSER
+# ============================================================
 import os
 """
 evaluator.py — HIT137 Assignment 2, Question 2
@@ -129,8 +132,8 @@ def parse_power(state):
     left = parse_primary(state) # Get the immediately relevant left-hand node
     if current(state)[0] == "OP" and current(state)[1] == "^": 
         eat(state)
-        right = parse_power(state) # Recursive call for a right associative
-                                   # Simply, keep chaining to the right before completing the current node
+        right = parse_unary(state) # Allow unary negation after ^ while keeping exponentiation right-associative
+                                   # Keep chaining exponentiation to the right before completing the current node
         return ("bin", "^", left, right) # Format a suitable tuple to return
         # "bin" for binary, "^" for the operand, and link the 'left' and 'right' branches of exponentiation
     return left    
@@ -158,6 +161,9 @@ def parse_term(state):
             # For cases like 2(3), make sure the result is 6 emplopying Implicit Multiplication
             node = ("bin", "*", node, right)
             # Chain left-to-right by calling node
+        elif token_type == "NUM" and state["tokens"][state["pos"] - 1][0] == "RPAREN":
+            right = parse_unary(state)
+            node = ("bin", "*", node, right)
         else:
             break
     return node
