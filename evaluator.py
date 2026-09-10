@@ -173,54 +173,79 @@ def parse_expr(state):
         # To employ left-to-right chaining
     return node # Return the complete Abstract Syntax Tree for the entire expression
 
-# Evaluation and output formatting
+# ============================================================
+# HIMANSHU PART - EVALUATION AND OUTPUT FORMATTING
+# ============================================================
 
+# Evaluates the parse tree and returns the final answer
 def evaluate_tree(node):
     kind = node[0]
 
+    # If the node is just a number, return its value
     if kind == "num":
         return node[1]
 
+    # Handle negative values
     if kind == "neg":
         return -evaluate_tree(node[1])
 
+    # Handle binary operations such as +, -, *, /, %, ^
     if kind == "bin":
         op = node[1]
+
+        # Evaluate both sides of the operation first
         left = evaluate_tree(node[2])
         right = evaluate_tree(node[3])
 
         if op == "+":
             return left + right
+
         elif op == "-":
             return left - right
+
         elif op == "*":
             return left * right
+
         elif op == "/":
             return left / right
+
         elif op == "%":
             return left % right
+
         elif op == "^":
             return left ** right
 
+    # This should only happen if the tree is invalid
     raise ValueError("Invalid expression tree")
-        
+
+
+# Formats the number before writing it to output.txt
 def format_number(value):
+
+    # Remove .0 from whole numbers, for example 8.0 becomes 8
     if value == int(value):
         return str(int(value))
 
+    # Round decimal answers to a maximum of 4 decimal places
     return str(round(value, 4))
 
+
+# Changes the parse tree into the format required by the assignment
 def tree_to_string(node):
     kind = node[0]
 
+    # Number nodes are displayed normally
     if kind == "num":
         return format_number(node[1])
 
+    # Unary negative is displayed using "neg"
     if kind == "neg":
         return "(neg " + tree_to_string(node[1]) + ")"
 
+    # Binary operations are displayed as (operator left right)
     if kind == "bin":
         op = node[1]
+
         left = tree_to_string(node[2])
         right = tree_to_string(node[3])
 
@@ -228,20 +253,33 @@ def tree_to_string(node):
 
     raise ValueError("Invalid expression tree")
 
+
+# Converts the token list into the required output format
 def tokens_to_string(tokens):
     parts = []
 
     for token_type, token_value in tokens:
+
+        # END token does not have a value
         if token_type == "END":
             parts.append("[END]")
-        else:
-            parts.append("[" + token_type + ":" + token_value + "]")
 
+        else:
+            parts.append(
+                "[" + token_type + ":" + token_value + "]"
+            )
+
+    # Put one space between each token
     return " ".join(parts)
 
+
+# Handles one expression from start to finish
 def process_expression(expr):
+
+    # First convert the expression into tokens
     tokens = tokenizer(expr)
 
+    # Invalid characters cause a tokenizing error
     if tokens is None:
         return {
             "input": expr,
@@ -252,6 +290,7 @@ def process_expression(expr):
 
     token_text = tokens_to_string(tokens)
 
+    # Try to parse the expression and create its tree
     try:
         state = {
             "tokens": tokens,
@@ -260,11 +299,13 @@ def process_expression(expr):
 
         tree = parse_expr(state)
 
+        # After parsing, only the END token should remain
         if current(state)[0] != "END":
             raise ValueError("Unexpected token")
 
         tree_text = tree_to_string(tree)
 
+    # If parsing fails, return an error for the expression
     except (ValueError, IndexError):
         return {
             "input": expr,
@@ -273,6 +314,8 @@ def process_expression(expr):
             "result": "ERROR"
         }
 
+    # The expression may parse correctly but still fail while calculating
+    # For example: 1 / 0
     try:
         result = float(evaluate_tree(tree))
 
@@ -286,24 +329,32 @@ def process_expression(expr):
         "result": result
     }
 
+
+# Main function required by the assignment
 def evaluate_file(input_path: str) -> list[dict]:
     results = []
 
+    # Read all expressions from the input file
     with open(input_path, "r") as input_file:
         expressions = input_file.read().splitlines()
 
+    # Process each expression one at a time
     for expression in expressions:
         result = process_expression(expression)
         results.append(result)
 
+    # Create output.txt in the same folder as the input file
     output_dir = os.path.dirname(input_path)
     output_path = os.path.join(output_dir, "output.txt")
 
     blocks = []
 
+    # Build the four required output lines for each expression
     for item in results:
+
         if item["result"] == "ERROR":
             result_text = "ERROR"
+
         else:
             result_text = format_number(item["result"])
 
@@ -316,10 +367,13 @@ def evaluate_file(input_path: str) -> list[dict]:
 
         blocks.append(block)
 
+    # Separate each expression block with a blank line
     with open(output_path, "w") as output_file:
         output_file.write("\n\n".join(blocks))
 
     return results
 
+
+# Run the program using input.txt when this file is executed directly
 if __name__ == "__main__":
     evaluate_file("input.txt")
