@@ -172,5 +172,34 @@ def parse_expr(state):
         # To employ left-to-right chaining
     return node # Return the complete Abstract Syntax Tree for the entire expression
 
+# Evaluation and output formatting
 
+def evaluate_tree(node):
+    kind = node[0]
+
+    if kind == "num":
+        return node[1]
+
+    if kind == "neg":
+        return -evaluate_tree(node[1])
+
+    if kind == "bin":
+        op = node[1]
+        left = evaluate_tree(node[2])
+        right = evaluate_tree(node[3])
+
+        if op == "+":
+            return left + right
+        elif op == "-":
+            return left - right
+        elif op == "*":
+            return left * right
+        elif op == "/":
+            return left / right
+        elif op == "%":
+            return left % right
+        elif op == "^":
+            return left ** right
+
+    raise ValueError("Invalid expression tree")
         
