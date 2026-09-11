@@ -25,3 +25,7 @@ Reads input.txt (one expression per line), writes output.txt in the same directo
 
 # DESIGN NOTES
 cipher.py shifts each character *within its own sub-range* (a-n, o-z, A-M, N-Z, 0-9) rather than around the full 26 letter alphabet. This is so it can keep every shifted character in the same category it started in, making the implementation cleaner, making sure decryption always recovers the original text with no errors.
+
+### INPUTS FOR Q1:
+SHIFT 1 => 5
+SHIFT 2 => 29
