@@ -21,7 +21,7 @@ Group assignment for HIT137 (Software Now), covering two independent programs:
 Prompts for Shift1 and Shift2 (non-negative integers). Reads raw_text.txt and produces encrypted_text.txt and decrypted_text.txt, printing whether verification succeeded.
 
 ### Evaluator (Q2, evaluator.py):
-Reads input.txt (one expression per line), writes output.txt in the same directory with completed Input/Tree/Tokens/Result block for each expression
+Reads input.txt (one expression per line), writes output.txt in the same directory with completed Input/Tree/Tokens/Result block for each expression.
 
 # DESIGN NOTES
 cipher.py shifts each character *within its own sub-range* (a-n, o-z, A-M, N-Z, 0-9) rather than around the full 26 letter alphabet. This is so it can keep every shifted character in the same category it started in, making the implementation cleaner, making sure decryption always recovers the original text with no errors.
